@@ -74,7 +74,7 @@ func (s *Server) statusPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := s.tmpl.Execute(w, data); err != nil {
+	if err := s.tmpl.ExecuteTemplate(w, "status", data); err != nil {
 		log.Printf("template execution error: %v", err)
 	}
 }
