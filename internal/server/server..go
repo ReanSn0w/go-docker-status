@@ -53,6 +53,7 @@ func (s *Server) handler() http.Handler {
 }
 
 type pageData struct {
+	Hostname   string
 	Containers []docker.ContainerInfo
 	TotalCount int
 	Error      string
@@ -62,6 +63,7 @@ func (s *Server) statusPageHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	data := pageData{
+		Hostname:   r.URL.Host,
 		Containers: []docker.ContainerInfo{},
 	}
 
