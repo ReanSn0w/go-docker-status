@@ -6,88 +6,164 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Docker Status Page</title>
         <style>
+            :root {
+                /* Light theme colors */
+                --bg-primary: #ffffff;
+                --bg-secondary: #f5f5f5;
+                --text-primary: #333333;
+                --text-secondary: #666666;
+                --text-tertiary: #888888;
+                --border-color: #e0e0e0;
+                --card-shadow: rgba(0, 0, 0, 0.1);
+                --card-shadow-hover: rgba(0, 0, 0, 0.2);
+                --text-shadow: rgba(0, 0, 0, 0.3);
+                --primary-color: #667eea;
+                --error-bg: #f8d7da;
+                --error-text: #721c24;
+                --error-border: #f5c6cb;
+                --status-running-bg: #d4edda;
+                --status-running-text: #155724;
+                --status-exited-bg: #f8d7da;
+                --status-exited-text: #721c24;
+                --status-created-bg: #d1ecf1;
+                --status-created-text: #0c5460;
+                --status-other-bg: #fff3cd;
+                --status-other-text: #856404;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    /* Dark theme colors */
+                    --bg-primary: #1e1e1e;
+                    --bg-secondary: #2d2d2d;
+                    --text-primary: #e8e8e8;
+                    --text-secondary: #b0b0b0;
+                    --text-tertiary: #909090;
+                    --border-color: #404040;
+                    --card-shadow: rgba(0, 0, 0, 0.3);
+                    --card-shadow-hover: rgba(0, 0, 0, 0.5);
+                    --text-shadow: rgba(0, 0, 0, 0.7);
+                    --primary-color: #8892d8;
+                    --error-bg: #5a3a3d;
+                    --error-text: #ffb3ba;
+                    --error-border: #7a4a4d;
+                    --status-running-bg: #3a5a4d;
+                    --status-running-text: #b3e5b3;
+                    --status-exited-bg: #5a3a3d;
+                    --status-exited-text: #ffb3ba;
+                    --status-created-bg: #3a5a6d;
+                    --status-created-text: #b3d9ff;
+                    --status-other-bg: #6d5a3a;
+                    --status-other-text: #ffd9b3;
+                }
+            }
+
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
+
             body {
                 font-family:
                     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                     "Helvetica Neue", Arial, sans-serif;
                 min-height: 100vh;
                 padding: 20px;
+                background-color: var(--bg-secondary);
+                color: var(--text-primary);
+                transition:
+                    background-color 0.3s ease,
+                    color 0.3s ease;
             }
+
             .container {
                 max-width: 1200px;
                 margin: 0 auto;
             }
+
             h1 {
-                color: black;
+                color: var(--text-primary);
                 margin-bottom: 30px;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                text-shadow: 2px 2px 4px var(--text-shadow);
             }
+
             .stats {
                 display: flex;
                 gap: 20px;
                 margin-bottom: 30px;
                 flex-wrap: wrap;
             }
+
             .stat-card {
-                background: white;
+                background: var(--bg-primary);
                 padding: 20px;
                 border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 2px 8px var(--card-shadow);
                 flex: 1;
                 min-width: 150px;
+                transition:
+                    background-color 0.3s ease,
+                    box-shadow 0.3s ease;
             }
+
             .stat-card h3 {
-                color: #666;
+                color: var(--text-secondary);
                 font-size: 14px;
                 margin-bottom: 10px;
             }
+
             .stat-card .value {
                 font-size: 32px;
                 font-weight: bold;
-                color: #667eea;
+                color: var(--primary-color);
             }
+
             .containers-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
                 gap: 20px;
             }
+
             .container-card {
-                background: white;
+                background: var(--bg-primary);
                 border-radius: 8px;
                 padding: 20px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 4px 12px var(--card-shadow);
                 transition:
                     transform 0.2s,
-                    box-shadow 0.2s;
+                    box-shadow 0.2s,
+                    background-color 0.3s ease;
             }
+
             .container-card:hover {
                 transform: translateY(-4px);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 8px 16px var(--card-shadow-hover);
             }
+
             .container-name {
                 font-size: 18px;
                 font-weight: bold;
-                color: #333;
+                color: var(--text-primary);
                 margin-bottom: 12px;
                 word-break: break-all;
             }
+
             .container-info {
                 margin: 8px 0;
                 font-size: 14px;
             }
+
             .info-label {
-                color: #888;
+                color: var(--text-secondary);
                 font-weight: 600;
             }
+
             .info-value {
-                color: #333;
+                color: var(--text-primary);
                 margin-left: 8px;
             }
+
             .status {
                 display: inline-block;
                 padding: 4px 12px;
@@ -95,42 +171,73 @@
                 font-size: 12px;
                 font-weight: bold;
                 margin-top: 12px;
+                transition:
+                    background-color 0.3s ease,
+                    color 0.3s ease;
             }
+
             .status.running {
-                background-color: #d4edda;
-                color: #155724;
+                background-color: var(--status-running-bg);
+                color: var(--status-running-text);
             }
+
             .status.exited {
-                background-color: #f8d7da;
-                color: #721c24;
+                background-color: var(--status-exited-bg);
+                color: var(--status-exited-text);
             }
+
             .status.created {
-                background-color: #d1ecf1;
-                color: #0c5460;
+                background-color: var(--status-created-bg);
+                color: var(--status-created-text);
             }
+
             .status.other {
-                background-color: #fff3cd;
-                color: #856404;
+                background-color: var(--status-other-bg);
+                color: var(--status-other-text);
             }
+
             .image-name {
                 font-size: 12px;
-                color: #666;
+                color: var(--text-secondary);
                 word-break: break-all;
             }
+
             .error {
-                background: #f8d7da;
-                color: #721c24;
+                background: var(--error-bg);
+                color: var(--error-text);
                 padding: 20px;
                 border-radius: 8px;
-                border: 1px solid #f5c6cb;
+                border: 1px solid var(--error-border);
                 margin-bottom: 20px;
+                transition:
+                    background-color 0.3s ease,
+                    color 0.3s ease;
             }
+
             .empty {
-                background: white;
+                background: var(--bg-primary);
                 padding: 40px;
                 border-radius: 8px;
                 text-align: center;
-                color: #888;
+                color: var(--text-tertiary);
+                transition:
+                    background-color 0.3s ease,
+                    color 0.3s ease;
+            }
+
+            @media (max-width: 768px) {
+                .stats {
+                    flex-direction: column;
+                }
+
+                .containers-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                h1 {
+                    font-size: 24px;
+                    margin-bottom: 20px;
+                }
             }
         </style>
     </head>
