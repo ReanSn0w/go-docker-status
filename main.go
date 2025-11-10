@@ -13,14 +13,15 @@ var (
 	opts     = struct {
 		app.Debug
 
-		Port int `short:"p" long:"port" env:"PORT" default:"8080" description:"Port to listen on"`
+		Title string `short:"t" long:"title" env:"TITLE" default:"Docker" description:"Title of the status page"`
+		Port  int    `short:"p" long:"port" env:"PORT" default:"8080" description:"Port to listen on"`
 	}{}
 )
 
 func main() {
 	app := app.New("Docker status page", revision, &opts)
 
-	srv, err := server.New(app.Log())
+	srv, err := server.New(app.Log(), opts.Title)
 	if err != nil {
 		app.Log().Logf("[ERROR] server init err: %s", err.Error())
 		os.Exit(2)

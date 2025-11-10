@@ -12,7 +12,7 @@ import (
 	"github.com/go-pkgz/lgr"
 )
 
-func New(log lgr.L) (*Server, error) {
+func New(log lgr.L, title string) (*Server, error) {
 	docker, err := docker.New()
 	if err != nil {
 		return nil, err
@@ -28,6 +28,7 @@ func New(log lgr.L) (*Server, error) {
 
 type Server struct {
 	log    lgr.L
+	title  string
 	srv    *web.Server
 	tmpl   *template.Template
 	docker *docker.Docker
@@ -53,7 +54,7 @@ func (s *Server) handler() http.Handler {
 }
 
 type pageData struct {
-	Hostname   string
+	Title      string
 	Containers []docker.ContainerInfo
 	TotalCount int
 	Error      string
@@ -63,7 +64,7 @@ func (s *Server) statusPageHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	data := pageData{
-		Hostname:   r.URL.Host,
+		Title:      s.title,
 		Containers: []docker.ContainerInfo{},
 	}
 
